@@ -22,9 +22,9 @@ scala_binary (
   ],
   deps = [
     "@com_github_scopt_scopt_2_11//jar",
-    "@scala//:scala-library",
-    "@scala//:scala-parser-combinators",
-    "@scala//:scala-reflect",
+#    "@scala//:scala-library",
+#    "@scala//:scala-parser-combinators",
+#    "@scala//:scala-reflect",
     "@aopalliance_aopalliance//jar",
     "@ch_qos_logback_logback_classic//jar",
     "@ch_qos_logback_logback_core//jar",

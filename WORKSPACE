@@ -1,16 +1,37 @@
 workspace(name = "play_scala_rest_api_example_bazel")
 
-# update version as needed
-rules_play_routes_version = "cba8a4383d81e6519730ba2b0203f74fd2c9b765"
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+rules_play_routes_version = "f1e5beb66ce14fa02baedb53fcd9132fb2786c01"
 http_archive(
   name = "io_bazel_rules_play_routes",
-  url = "https://github.com/lucidsoftware/rules_play_routes/archive/%s.zip"%rules_play_routes_version,
+  sha256 = "4be5194ba03d8a72881c4a5320d95b646467429527a33d8c0f0030d786fa2697",
+  strip_prefix = "rules_play_routes-{}".format(rules_play_routes_version),
   type = "zip",
-  strip_prefix= "rules_play_routes-%s" % rules_play_routes_version
+  url = "https://github.com/lucidsoftware/rules_play_routes/archive/{}.zip".format(rules_play_routes_version),
+)
+
+RULES_JVM_EXTERNAL_TAG = "2.5"
+http_archive(
+    name = "rules_jvm_external",
+    sha256 = "249e8129914be6d987ca57754516be35a14ea866c616041ff0cd32ea94d2f3a1",
+    strip_prefix = "rules_jvm_external-{}".format(RULES_JVM_EXTERNAL_TAG),
+    type = "zip",
+    url = "https://github.com/bazelbuild/rules_jvm_external/archive/{}.zip".format(RULES_JVM_EXTERNAL_TAG),
+)
+
+load("@io_bazel_rules_play_routes//:workspace.bzl", "play_routes_repositories")
+play_routes_repositories("2.5")
+load("@play_routes//:defs.bzl", play_routes_pinned_maven_install = "pinned_maven_install")
+play_routes_pinned_maven_install()
+
+bind(
+  name = "default-play-routes-compiler-cli",
+  actual = "@io_bazel_rules_play_routes//default-compiler-clis:scala_2_11_play_2_5"
 )
 
 # update version as needed
-rules_scala_version = "24bc74b2664560fdba27b31da9e6c529dd231e1e"
+rules_scala_version = "0f89c210ade8f4320017daf718a61de3c1ac4773"
 http_archive(
   name = "io_bazel_rules_scala",
   url = "https://github.com/bazelbuild/rules_scala/archive/%s.zip"%rules_scala_version,
@@ -20,6 +41,25 @@ http_archive(
 
 load("@io_bazel_rules_scala//scala:scala.bzl", "scala_repositories")
 scala_repositories()
+
+protobuf_version="09745575a923640154bcf307fba8aedff47f240a"
+protobuf_version_sha256="416212e14481cff8fd4849b1c1c1200a7f34808a54377e22d7447efdf54ad758"
+
+http_archive(
+    name = "com_google_protobuf",
+    url = "https://github.com/protocolbuffers/protobuf/archive/%s.tar.gz" % protobuf_version,
+    strip_prefix = "protobuf-%s" % protobuf_version,
+    sha256 = protobuf_version_sha256,
+)
+
+# bazel-skylib 0.8.0 released 2019.03.20 (https://github.com/bazelbuild/bazel-skylib/releases/tag/0.8.0)
+skylib_version = "0.8.0"
+http_archive(
+    name = "bazel_skylib",
+    type = "tar.gz",
+    url = "https://github.com/bazelbuild/bazel-skylib/releases/download/{}/bazel-skylib.{}.tar.gz".format (skylib_version, skylib_version),
+    sha256 = "2ef429f5d7ce7111263289644d233707dba35e39696377ebab8b0bc701f7818e",
+)
 
 load("@io_bazel_rules_scala//scala:toolchains.bzl", "scala_register_toolchains")
 scala_register_toolchains()
